@@ -293,7 +293,15 @@
     L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
     mymap.attributionControl.addAttribution('Licensed by &copy; <a href="some_link", class="your_class">Minghao Liu || Zejun Zheng</a>   ');
     let markers = L.markerClusterGroup({
-        //' + cluster.getChildCount()  + '
+      iconCreateFunction: function(cluster) {
+        if (cluster.getChildCount() >= 500){
+            return L.divIcon({html: '<i class="fa fa-medkit map-icon-red" style="font-size:70px"></i>'});
+        } else if (cluster.getChildCount() >= 100) {
+            return L.divIcon({html: '<i class="fa fa-medkit map-icon-red" style="font-size:50px"></i>'});
+        } else {
+            return L.divIcon({html: '<i class="fa fa-medkit map-icon-red" style="font-size:30px"></i>'});
+        }
+      },
 	     showCoverageOnHover: false,
     });
     allAed.aeds.rows.forEach((item, i) => {

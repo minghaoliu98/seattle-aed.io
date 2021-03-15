@@ -167,6 +167,10 @@ body, #map, #main{
   text-shadow: 0 0 3px #ffffff;
 }
 
+.map-icon-red {
+  color: #8B0000;
+}
+
 .legend {
     line-height: 16px;
     width: 100px;
@@ -207,4 +211,12 @@ body, #map, #main{
     font-size: 12px;
     line-height: 16px;
     margin: 0;
+}
+
+.leaflet-div-icon {
+			width: 60px;
+			height: 60px;
+      border: none;
+			background-color: transparent;
+			text-align: center;
 }
