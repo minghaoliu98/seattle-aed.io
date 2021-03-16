@@ -21,6 +21,38 @@
     userLocation.addEventListener('click', ()=>window.navigator.geolocation.getCurrentPosition(findUserLocation, handleError));
     let loginBtn = document.getElementById("login-btn");
     loginBtn.addEventListener('click', login);
+    let changePasswordBtn = document.getElementById("change-password-btn");
+    changePasswordBtn.addEventListener('click', changePassword);
+    let viewUploadedHisBtn = document.getElementById("view-upload-history");
+    viewUploadedHisBtn.addEventListener('click', loadUserHistory);
+    let userInfoBtn = document.getElementById("signed-in");
+    userInfoBtn.addEventListener('click', ()=>{
+      document.getElementById("user-info-id").textContent = user;
+      document.getElementById("user-info").classList.remove("hidden");
+      document.getElementById("main").classList.add("freeze");
+    });
+    let uploadBtn = document.getElementById("upload");
+    uploadBtn.addEventListener('click', (e)=> {
+        document.getElementById("marker-info-container").classList.add("hidden");
+        document.getElementById("upload-img").classList.remove('hidden');
+        document.getElementById("main").classList.add("freeze");
+        document.getElementById('select-img-btn').value = '';
+        currentMarker = item.id;
+        imageEditing.bind({url: "img/upload.jpg"});
+    });
+    let logOutBtn = document.getElementById("log-out");
+    logOutBtn.addEventListener('click', ()=>{
+      document.getElementById("unsigned").classList.remove("hidden");
+      document.getElementById("signed-in").classList.add("hidden");
+      document.getElementById("signed-in-p").textContent = "";
+      document.getElementById("user-info-id").textContent = "";
+      document.getElementById("user-info").classList.add("hidden");
+      document.getElementById("main").classList.remove("freeze");
+      document.getElementById("user-uploaded-container").innerHTML = "";
+      user = {};
+      userlocationMarker = {};
+    });
+
     let createAccountBtn = document.getElementById("create-account-btn");
     createAccountBtn.addEventListener('click', createAccount);
     let el = document.getElementById('image-cutting');
@@ -36,6 +68,76 @@
     submitBtn.addEventListener('click', submitImage);
   }
 
+  async function loadUserHistory() {
+    document.getElementById("user-info").classList.add("hidden");
+    document.getElementById("user-uploaded-img").classList.remove("hidden");
+    document.getElementById("main").classList.add("freeze");
+    let result = {};
+    try {
+      let params = new FormData();
+      params.append("email", user);
+      let response = await fetch(URL + "/user-upload", {method : "POST", body : params});
+      checkStatus(response);
+      result = await response.json();
+    } catch (error) {
+      handleError();
+    }
+    let container = document.getElementById("user-uploaded-container");
+    container.innerHTML = "";
+    result.img.rows.forEach((item) => {
+      let proving = "Pending";
+      if (item.rank != -1) {
+        proving = "Proved"
+      }
+      let divRow = document.createElement("div");
+      divRow.classList.add("info-element");
+      divRow.classList.add("shadow-sm");
+      divRow.classList.add("flex-column");
+      let firstRow = document.createElement("div");
+      let name = document.createElement("p");
+      //name.setAttribute('href', URL + '/pic/' + item.img_id);
+      name.textContent = "ID: " + item.img_id + "   ||   Status: " + proving;
+
+      let date = document.createElement("p");
+      date.textContent = "Upload Date: " + ("" + item.upload_date.substring(0, 10));
+      let description = document.createElement("p");
+      description.textContent = "Description: " + item.description;
+      divRow.appendChild(name);
+      divRow.appendChild(date);
+      divRow.appendChild(description);
+      divRow.addEventListener('click', ()=> window.open(URL + '/pic/' + item.img_id));
+      container.appendChild(divRow);
+    });
+  }
+
+  function changePassword() {
+    let oldPassword = document.getElementById("change-password-old").value;
+    document.getElementById("change-password-old").value = "";
+    let newPassword = document.getElementById("change-password-new").value;
+    document.getElementById("change-password-new").value = "";
+    let confirmPassword = document.getElementById("change-password-confirm").value;
+    document.getElementById("change-password-confirm").value = "";
+    if (newPassword === confirmPassword && newPassword.length > 5 && newPassword.length < 20) {
+      let params = new FormData();
+      params.append("email", user);
+      params.append("oldPassword", oldPassword);
+      params.append("newPassword", newPassword);
+      params.append("confirmPassword", confirmPassword);
+      console.log(user);
+      fetch(URL + "/change-password", {method : "POST", body : params })
+        .then(checkStatus)
+        .then(resp => resp.json())
+        .then(switchUserInterface)
+        .catch(handleError);
+    } else if (password !== confirmPassword) {
+      window.alert("password doesn't match");
+    } else if (password.length >= 20){
+      window.alert("password is too long, exceed 20 chars");
+    } else {
+      window.alert("password is too short, below 6 chars");
+    }
+  }
+
   /**
   * sumbit the cutted image to server
   */
@@ -43,7 +145,7 @@
     if(Object.keys(user).length !== 0 && currentMarker !== -1){
       imageEditing.result({type: "canvas", size: "original", format: "jpg", quality: 1}).then((img)=>{
         let params = new FormData();
-        params.append("id", currentMarker);
+        params.append("aed_id", currentMarker);
         params.append("email", user);
         params.append("description", document.getElementById("description").value);
         params.append("image", img);
@@ -106,9 +208,12 @@
     let email = document.getElementById("create-account-email").value;
     let password = document.getElementById("create-account-password").value;
     let confirmPassword = document.getElementById("create-account-password-confirm").value;
+    document.getElementById("create-account-email").value = "";
+    document.getElementById("create-account-password").value = "";
+    document.getElementById("create-account-password-confirm").value = "";
     if (validateEmail(email) && password === confirmPassword && password.length > 5 && password.length < 20) {
       let params = new FormData();
-      params.append("id", email);
+      params.append("email", email);
       params.append("password", password);
       params.append("confirmPassword", confirmPassword);
       fetch(URL + "/registor", {method : "POST", body : params })
@@ -128,9 +233,11 @@
   function login() {
     let email = document.getElementById("login-email").value;
     let password = document.getElementById("login-password").value;
+    document.getElementById("login-password").value = "";
+    document.getElementById("login-email").value = "";
     if (validateEmail(email) && password.length > 5 && password.length < 20) {
       let params = new FormData();
-      params.append("id", email);
+      params.append("email", email);
       params.append("password", password);
 
       fetch(URL + "/login", {method : "POST", body : params })
@@ -153,6 +260,7 @@
   function switchUserInterface(json) {
     if(json.status == true) {
       user = json.name;
+      document.getElementById("change-password").classList.add("hidden");
       document.getElementById("create-account").classList.add("hidden");
       document.getElementById("login").classList.add("hidden");
       document.getElementById("unsigned").classList.add("hidden");
@@ -171,8 +279,9 @@
       errorMessasge.classList.remove('hidden');
       document.getElementById("login").classList.add('freeze');
       document.getElementById("create-account").classList.add('freeze');
-
+      document.getElementById("change-password").classList.add("freeze");
       setTimeout(() => {
+        document.getElementById("change-password").classList.remove("freeze");
         document.getElementById("login").classList.remove('freeze');
         document.getElementById("create-account").classList.remove('freeze');
         document.getElementById("error-m").classList.add('hidden');
@@ -232,7 +341,7 @@
         let name = document.createElement("p");
         name.textContent = item.aed_location_name;
         let dist = document.createElement("p");
-        dist.textContent = "Linear Distance: " + item.dist;
+        dist.textContent = "Linear Distance: " + Math.round(parseFloat(item.dist)) + "m || " +  Math.round( parseFloat(item.dist) / 3.28084 ) + "ft";
         let access = document.createElement("p");
         access.textContent = "Access Ability: " + item.aed_accessibility;
         div.appendChild(name);
@@ -366,14 +475,6 @@
       uploadBtn.classList.remove("btn-outline-secondary");
       uploadBtn.classList.add("btn-outline-success");
       uploadBtn.itemId = item.id;
-      uploadBtn.addEventListener('click', (e)=> {
-          document.getElementById("marker-info-container").classList.add("hidden");
-          document.getElementById("upload-img").classList.remove('hidden');
-          document.getElementById("main").classList.add("freeze");
-          document.getElementById('select-img-btn').value = '';
-          currentMarker = item.id;
-          imageEditing.bind({url: "img/upload.jpg"});
-      });
     } else {
       uploadBtn.textContent = "Please Login To Upload Image";
       uploadBtn.classList.add('freeze');
@@ -395,6 +496,16 @@
 
 })();
 
+function returnToMainFromUserInfo() {
+  document.getElementById("user-info").classList.add("hidden");
+  document.getElementById("main").classList.remove("freeze");
+}
+
+function returnToMainFromChangePassword() {
+  document.getElementById("change-password").classList.add("hidden");
+  document.getElementById("main").classList.remove("freeze");
+}
+
 function returnToMainFromUpload() {
   document.getElementById("upload-img").classList.add("hidden");
   document.getElementById("main").classList.remove("freeze");
@@ -404,6 +515,11 @@ function returnToMainFromUpload() {
 //add hidden to the info div which contains closet AED location
 function returnToMainFromInfo() {
   document.getElementById("info").classList.add("hidden");
+}
+
+function returnToMainFromUserUploaded() {
+  document.getElementById("user-uploaded-img").classList.add("hidden");
+  document.getElementById("main").classList.remove("freeze");
 }
 
 function returnToMainFromMarkerInfo() {
@@ -422,13 +538,20 @@ function returnToMainFromLogin() {
   document.getElementById("main").classList.remove("freeze");
 }
 
-//remove hidden to the createUser div
+//remove hidden from change Password div
+function clickChangePassword() {
+  document.getElementById("user-info").classList.add("hidden");
+  document.getElementById("change-password").classList.remove("hidden");
+  document.getElementById("main").classList.add("freeze");
+}
+
+//remove hidden from the createUser div
 function clickCreateUser(){
   document.getElementById("create-account").classList.remove("hidden");
   document.getElementById("main").classList.add("freeze");
 }
 
-//remove hidden to the user login div
+//remove hidden from the user login div
 function clickLogin(){
   document.getElementById("login").classList.remove("hidden")
   document.getElementById("main").classList.add("freeze");

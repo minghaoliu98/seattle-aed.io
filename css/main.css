@@ -13,7 +13,7 @@ body, #map, #main{
   height: 100%;
 }
 
-#success-m, #error-m, #info, #login, #create-account, #user-location-container, #marker-info-container, #upload-img, #select-img-btn{
+#success-m, #error-m, #info, #login, #create-account, #user-location-container, #marker-info-container, #upload-img, #select-img-btn, #change-password, #user-info, #user-uploaded-img{
   position: absolute !important;
 }
 
@@ -33,6 +33,7 @@ body, #map, #main{
   text-align: left;
   justify-content: space-between;
   opacity: 1;
+  padding-top: 5px;
 }
 
 .info-element:hover, #signed-in:hover {
@@ -49,17 +50,17 @@ body, #map, #main{
   font-size: 20px;
 }
 
-#upload-img, #success-m, #error-m, #login, #create-account, #marker-info-container {
+#upload-img, #success-m, #error-m, #login, #create-account, #marker-info-container, #change-password, #user-info, #user-uploaded-img{
   align-self: center;
   justify-content: space-between;
   padding: 15px;
 }
 
-#info, #marker-info-container{
+#info, #marker-info-container, #user-uploaded-img{
   flex-wrap: wrap;
 }
 
-#login, #create-account {
+#login, #create-account, #change-password {
   width: 300px;
   height: 400px;
 }
@@ -125,7 +126,7 @@ body, #map, #main{
   font-size: 25px;
 }
 
-.flex-row, .info-element {
+.flex-row, .info-element{
     flex-direction: row !important;
 }
 
@@ -211,6 +212,11 @@ body, #map, #main{
     font-size: 12px;
     line-height: 16px;
     margin: 0;
+}
+
+#change-password-ui-btn {
+    margin-top: 15px !important;
+    margin-bottom:  15px !important;
 }
 
 .leaflet-div-icon {

@@ -94,6 +94,36 @@
       <img id='marker-img' alt="Picture Is Missing" width="400" height="300">
       <button type="button" class="btn btn-outline-success" id='upload'>Upload AED Picture</button>
     </div>
+    <div id="change-password" class="bg-light flex-column hidden rounded text-center">
+      <div class="flex-row">
+        <i class="fa fa-times right-top close-icon" aria-hidden="true" onclick="returnToMainFromChangePassword()"></i>
+      </div>
+      <label for="change-password-old" class="sr-only">Old Password</label>
+      <input type="email" id="change-password-old" class="form-control" placeholder="Old Password" required autofocus>
+      <label for="change-password-new" class="sr-only">New Password</label>
+      <input type="password" id="change-password-new" class="form-control" placeholder="New Password" required>
+      <label for="change-password-confirm" class="sr-only">Confirm New Password</label>
+      <input type="password" id="change-password-confirm" class="form-control" placeholder="Confirm Your Password" required>
+      <button class="btn btn-lg btn-primary btn-block" id="change-password-btn" type="submit">Change Password</button>
+    </div>
+    <div id="user-info" class="bg-light flex-column hidden rounded text-center">
+      <div class="flex-row">
+        <i class="fa fa-times right-top close-icon" aria-hidden="true" onclick="returnToMainFromUserInfo()"></i>
+      </div>
+      <h3> Hello: </h3>
+      <p id=user-info-id> </p>
+      <button class="btn btn-lg btn-primary btn-block" id="view-upload-history" type="submit">Your Upload History</button>
+      <button class="btn btn-lg btn-warning btn-block" id="change-password-ui-btn"type="submit" onclick="clickChangePassword()">Change Password</button>
+      <button class="btn btn-lg btn-danger btn-block" id="log-out" type="submit">Log Out</button>
+    </div>
+    <div id="user-uploaded-img" class="bg-light flex-column hidden rounded text-center">
+      <div class="flex-row">
+        <i class="fa fa-times right-top close-icon" aria-hidden="true" onclick="returnToMainFromUserUploaded()"></i>
+      </div>
+      <div id=user-uploaded-container>
+
+      </div>
+    </div>
     <p class="p-3 mb-2 alert alert-danger hidden" id="error-m">hello World</p>
     <p class="p-3 mb-2 alert alert-success hidden" id="success-m">hello World</p>
   <!-- Our web map and content will go here -->
