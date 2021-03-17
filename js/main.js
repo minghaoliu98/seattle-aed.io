@@ -37,7 +37,7 @@
         document.getElementById("upload-img").classList.remove('hidden');
         document.getElementById("main").classList.add("freeze");
         document.getElementById('select-img-btn').value = '';
-        currentMarker = item.id;
+        currentMarker = document.getElementById("upload").value;
         imageEditing.bind({url: "img/upload.jpg"});
     });
     let logOutBtn = document.getElementById("log-out");
@@ -149,6 +149,7 @@
         params.append("email", user);
         params.append("description", document.getElementById("description").value);
         params.append("image", img);
+        console.log(currentMarker);
         fetch(URL + "/upload",  {method : "POST", body : params })
           .then(checkStatus)
           .then(resp => resp.json())
@@ -474,7 +475,7 @@
       uploadBtn.classList.remove('freeze');
       uploadBtn.classList.remove("btn-outline-secondary");
       uploadBtn.classList.add("btn-outline-success");
-      uploadBtn.itemId = item.id;
+      uploadBtn.value = item.id;
     } else {
       uploadBtn.textContent = "Please Login To Upload Image";
       uploadBtn.classList.add('freeze');
