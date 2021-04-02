@@ -4,7 +4,7 @@
   var userlocationMarker = {};
   var mymap = {};
   var imageEditing = {};
-  const URL = "https://www.lmh98.com/api";
+  const URL = "https://api.lmh98.com/api";
 
   window.addEventListener("load", init);
   let colors = chroma.scale('YlOrRd').colors(5);
